@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+<all>
+	<fullname type="str">George</fullname>
+	<characteristics type="dict">
+		<sex type="str">male</sex>
+		<age type="int">27</age>
+	</characteristics>
+	<skills type="list">
+		<item type="str">smart</item>
+		<item type="str">strong</item>
+	</skills>
+	<experience type="list">
+		<item type="dict">
+			<position type="str">developer</position>
+			<workplace type="str">netflix</workplace>
+			<salary type="str">7000</salary>
+		</item>
+		<item type="dict">
+			<position type="str">engineer</position>
+			<workplace type="str">facebook</workplace>
+			<id_card type="int">56117</id_card>
+			<Country type="str">Scotland</Country>
+		</item>
+	</experience>
+</all>
