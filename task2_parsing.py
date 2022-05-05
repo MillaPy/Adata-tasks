@@ -4,7 +4,7 @@ import pandas as pd
 from re import search
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException
 
 class NotProperlyParsed(Exception):
     """
@@ -21,8 +21,8 @@ class GosZakup():
     def __init__(self, download_folder=''):
         # simple init nothing serious is needed here
         self.download_folder = download_folder
-        home = Path.home()
-        self.executable_path = os.path.join(home, 'creds', 'chromedriver.exe')
+        ROOT_DIR = os.path.dirname(os.path.abspath("chromedriver.exe"))
+        self.executable_path = os.path.join(ROOT_DIR, 'chromedriver.exe')
 
     def chrome_exe_dynamic_path_search(self):
         # you will need to work with only chrome
@@ -39,19 +39,27 @@ class GosZakup():
                     # found path would be used
                     return chrome_path
 
-    def driver_innit(self, download_folder, executable_path):
+    def driver_innit(self):
         print("\nExpecting connection ---")
         # initialize chrome options
         options = webdriver.ChromeOptions()
-        options.binary_location = self.chrome_exe_dynamic_path_search()
+        # options.binary_location = self.chrome_exe_dynamic_path_search()
+
         # initialize driver
-        self.driver = webdriver.Chrome(ChromeDriverManager().install())#, executable_path=executable_path, chrome_options=options)
+        try:
+            # we would use the one we have on computer - if it isn't founded we will throw exception, and install the needed one
+            self.driver = webdriver.Chrome(executable_path=self.executable_path, chrome_options=options)
+        except WebDriverException:
+            # chrome driver would be installed in c:/users/user_name/drivers/chromedriver/users_wind_ext/chromeddirvers_version
+            # no need to call or use download on your behalf
+            self.driver = webdriver.Chrome(ChromeDriverManager().install())
+
         print("Got connected - waiting for URL ---")
         self.driver.implicitly_wait(10)
 
-    def geting_in_webpage(self, download_folder, executable_path):
-        # prepare url and innitialise driver for driver to get
-        self.driver_innit(download_folder, executable_path)
+    def getting_in_webpage(self):
+        # prepare url and initialise driver for driver to get
+        self.driver_innit()
 
         # get url ready
         export_url = 'https://www.goszakup.gov.kz/ru/registry/rqc'
@@ -181,9 +189,9 @@ class GosZakup():
 
         return organizations
 
-    def get_org_records(self, download_folder, executable_path):
+    def get_org_records(self):
         # start driver and get url
-        self.geting_in_webpage(download_folder, executable_path)
+        self.getting_in_webpage()
 
         # find elements on web table
         table_xpath = '//*[@id="main-wrapper"]/div[3]/div[3]/div[3]/div/table/tbody/tr'
@@ -246,13 +254,12 @@ class GosZakup():
 if __name__ == '__main__':
     # initialize download folder and driver path
     home = str(Path.home())
-    download_folder= os.path.join(home, "Downloads")
-    executable_path = os.path.join(home,'creds','chromedriver.exe') #os.path.abspath("chromedriver")
+    download_folder = os.path.join(home, "Downloads")
 
     # create object of class
     gk = GosZakup()
     gk.__init__(download_folder)
-    orgs_df = gk.get_org_records(download_folder, executable_path)
+    orgs_df = gk.get_org_records()
 
 
 
