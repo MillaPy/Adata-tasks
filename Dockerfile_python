@@ -14,5 +14,6 @@ RUN pip install pathlib
 RUN pip install selenium
 RUN pip install pandas
 RUN pip install webdriver-manager
+
 # COPY task2_parsing.py /task2_parsing.py
 CMD ["python3", "./task2_parsing.py"]
